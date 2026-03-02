@@ -129,22 +129,22 @@ export function readBike(): Bike {
 export async function writeBike(bike: Bike): Promise<void> {
   db.run(
     `UPDATE bike SET
-      name = :name, brand = :brand, model = :model, year = :year,
-      color = :color, engine_type = :engine_type,
-      plate_number = :plate_number, vin = :vin,
-      current_odometer = :current_odometer
+      name = ?, brand = ?, model = ?, year = ?,
+      color = ?, engine_type = ?,
+      plate_number = ?, vin = ?,
+      current_odometer = ?
     WHERE id = 1`,
-    {
-      ':name': bike.name,
-      ':brand': bike.brand,
-      ':model': bike.model,
-      ':year': bike.year,
-      ':color': bike.color,
-      ':engine_type': bike.engine_type,
-      ':plate_number': bike.plate_number,
-      ':vin': bike.vin,
-      ':current_odometer': bike.current_odometer,
-    },
+    [
+      bike.name,
+      bike.brand,
+      bike.model,
+      bike.year,
+      bike.color,
+      bike.engine_type,
+      bike.plate_number,
+      bike.vin,
+      bike.current_odometer,
+    ],
   )
   await persist()
 }
@@ -169,16 +169,16 @@ export function readLogEntries(): LogEntry[] {
 export async function insertLogEntry(entry: Omit<LogEntry, 'id'>): Promise<LogEntry> {
   db.run(
     `INSERT INTO log_entry (date, odometer, type, title, description, cost, has_attachment)
-     VALUES (:date, :odometer, :type, :title, :description, :cost, :has_attachment)`,
-    {
-      ':date': entry.date,
-      ':odometer': entry.odometer,
-      ':type': entry.type,
-      ':title': entry.title,
-      ':description': entry.description,
-      ':cost': entry.cost,
-      ':has_attachment': entry.has_attachment ? 1 : 0,
-    },
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [
+      entry.date,
+      entry.odometer,
+      entry.type,
+      entry.title,
+      entry.description,
+      entry.cost,
+      entry.has_attachment ? 1 : 0,
+    ],
   )
   const [row] = db.exec('SELECT last_insert_rowid()')
   const id = row.values[0][0] as number

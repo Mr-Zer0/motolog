@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -82,6 +83,9 @@ export default function NewLogModal({ open, onOpenChange }: Props) {
       <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle>New log entry</DialogTitle>
+          <DialogDescription className="sr-only">
+            Fill in the details for your new log entry.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           <div className="space-y-1">

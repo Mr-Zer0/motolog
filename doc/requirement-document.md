@@ -1,7 +1,7 @@
 # MotoLogbook – Minimal Requirements Document
 
 A minimalist personal web app for tracking maintenance and modifications of a single motorbike.  
-Platform: Web (React + Tailwind + shadcn, SQLite WASM in browser, static hosting).
+Platform: Web (React + Tailwind + shadcn, SQLite WASM in browser, static hosting, **Progressive Web App**).
 
 ---
 
@@ -20,6 +20,7 @@ Goals:
 - Zero backend and zero recurring cost.
 - Minimal UI; focus on quickly adding and browsing logs.
 - All data local in browser, with optional manual backup.
+- Installable **Progressive Web App (PWA)** that works well on desktop and mobile.
 
 ---
 
@@ -31,6 +32,9 @@ Goals:
 4. Simple filters on the list.
 5. Local storage via SQLite WASM.
 6. Manual export/import (even if basic).
+7. **PWA support**:
+   - Installable on device.
+   - Offline-capable for core functionality.
 
 ---
 
@@ -154,6 +158,30 @@ Behavior:
 - Persist DB file to IndexedDB or OPFS so data survives reloads and restarts.
 - No external backend, no sync.
 
+### 4.3 Progressive Web App (PWA)
+
+- The app must be installable on supported browsers (desktop and mobile):
+  - Include a valid `manifest.json` with app name, icons, theme color, and start URL.
+- Use a service worker to:
+  - Cache core app shell (HTML, JS, CSS, fonts, icons) for offline use.
+  - Allow opening the app and viewing existing logs when offline.
+- Core behavior offline:
+  - User can open the app and see existing logs.
+  - User can add new logs while offline; they are stored locally via SQLite.
+- PWA should pass basic installability checks (served over HTTPS, manifest + service worker present).
+
+### 4.4 Performance
+
+- App should load quickly as a static web app.
+- Main operations (viewing logs, adding logs) should feel instant.
+- SQLite operations should be done asynchronously so the UI stays responsive.
+
+### 4.5 Security & Privacy
+
+- No external backend, no external tracking.
+- Data remains on the device unless user exports it.
+- No authentication needed.
+
 ---
 
 ## 5. Tech Stack
@@ -162,6 +190,9 @@ Behavior:
 - Tailwind CSS.
 - shadcn/ui.
 - SQLite WASM (e.g., sql.js or official sqlite3 WASM).
+- PWA:
+  - Web app manifest.
+  - Service worker for caching and offline behavior.
 - Static hosting (Firebase Hosting, Netlify, etc.).
 
 ---
@@ -195,7 +226,7 @@ Behavior:
 ## 7. UI Structure
 
 - Layout:
-  - Left sidebar (or top nav) with:
+  - Left sidebar or top nav with:
     - Home
     - Settings
 - Main content:
@@ -212,9 +243,12 @@ Behavior:
    - Wire Home and Settings to SQLite DB.
 3. Persistence:
    - Save DB to IndexedDB/OPFS.
-4. Backup/import:
+4. PWA:
+   - Add manifest.json and service worker.
+   - Ensure offline opening and basic usage.
+5. Backup/import:
    - Implement export/import.
-5. Polish:
+6. Polish:
    - Add edit/delete, better validation, small UX improvements.
 
 ---

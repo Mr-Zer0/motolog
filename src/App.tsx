@@ -1,17 +1,16 @@
 import { Routes, Route } from 'react-router-dom'
-import Landing from '@/pages/Landing'
+import Layout from '@/components/Layout'
+import Home from '@/pages/Home'
 import Settings from '@/pages/Settings'
-import Form from '@/pages/Form'
 
 function App() {
   return (
-    <div className="mx-auto max-w-md">
-      <Routes>
-        <Route path="/" element={<Landing />} />
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
         <Route path="/settings" element={<Settings />} />
-        <Route path="/form" element={<Form />} />
-      </Routes>
-    </div>
+      </Route>
+    </Routes>
   )
 }
 

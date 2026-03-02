@@ -82,7 +82,7 @@ async function persist(): Promise<void> {
 
 export async function initDatabase(): Promise<void> {
   const SQL = await initSqlJs({
-    locateFile: (file: string) => `https://sql.js.org/dist/${file}`,
+    locateFile: (file: string) => `/${file}`,
   })
 
   const saved = await loadFromIdb()

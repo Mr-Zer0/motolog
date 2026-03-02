@@ -3,11 +3,30 @@ import { useApp } from '@/context/AppContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import type { Bike } from '@/types'
 
+const emptyBike: Bike = {
+  name: '',
+  brand: '',
+  model: '',
+  year: null,
+  color: '',
+  engine_type: 'ICE',
+  plate_number: '',
+  vin: '',
+  current_odometer: null,
+}
+
 export default function Settings() {
-  const { bike, setBike } = useApp()
-  const [form, setForm] = useState<Bike>({ ...bike })
+  const { bike, saveBike } = useApp()
+  const [form, setForm] = useState<Bike>(bike ?? emptyBike)
   const [nameError, setNameError] = useState('')
   const [saved, setSaved] = useState(false)
 
@@ -24,12 +43,12 @@ export default function Settings() {
     if (field === 'name') setNameError('')
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (!form.name.trim()) {
       setNameError('Bike name is required')
       return
     }
-    setBike(form)
+    await saveBike(form)
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
   }
@@ -91,6 +110,18 @@ export default function Settings() {
               />
             </div>
             <div className="space-y-1">
+              <Label htmlFor="bike-color">Color</Label>
+              <Input
+                id="bike-color"
+                value={form.color}
+                onChange={e => handleChange('color', e.target.value)}
+                placeholder="e.g. Pearl White"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
               <Label htmlFor="bike-plate">License plate</Label>
               <Input
                 id="bike-plate"
@@ -98,6 +129,22 @@ export default function Settings() {
                 onChange={e => handleChange('plate_number', e.target.value)}
                 placeholder="e.g. กข 1234"
               />
+            </div>
+            <div className="space-y-1">
+              <Label>Engine type</Label>
+              <Select
+                value={form.engine_type}
+                onValueChange={v => handleChange('engine_type', v)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ICE">ICE</SelectItem>
+                  <SelectItem value="EV">EV</SelectItem>
+                  <SelectItem value="Hybrid">Hybrid</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

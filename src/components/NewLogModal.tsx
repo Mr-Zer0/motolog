@@ -55,7 +55,7 @@ export default function NewLogModal({ open, onOpenChange }: Props) {
     onOpenChange(value)
   }
 
-  function handleSave() {
+  async function handleSave() {
     const newErrors: typeof errors = {}
     if (!date) newErrors.date = 'Date is required'
     if (!type) newErrors.type = 'Type is required'
@@ -65,7 +65,7 @@ export default function NewLogModal({ open, onOpenChange }: Props) {
       return
     }
 
-    addLogEntry({
+    await addLogEntry({
       date,
       odometer: odometer ? Number(odometer) : null,
       type: type as LogType,

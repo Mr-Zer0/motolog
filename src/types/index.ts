@@ -5,6 +5,8 @@ export interface Bike {
   brand: string
   model: string
   year: number | null
+  color: string
+  engine_type: 'ICE' | 'EV' | 'Hybrid'
   plate_number: string
   vin: string
   current_odometer: number | null

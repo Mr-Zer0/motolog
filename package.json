@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "emulators": "firebase emulators:start",
+    "emulators:save": "firebase emulators:export ./emulator-data",
+    "emulators:load": "firebase emulators:start --import=./emulator-data"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",

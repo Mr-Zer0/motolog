@@ -25,13 +25,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [logEntries, setLogEntries] = useState<LogEntry[]>([])
 
   useEffect(() => {
-    initDatabase()
-      .then(() => {
-        setBikeState(readBike())
-        setLogEntries(readLogEntries())
-        setIsReady(true)
-      })
-      .catch(console.error)
+    async function init() {
+      await initDatabase()
+      const [bike, entries] = await Promise.all([readBike(), readLogEntries()])
+      setBikeState(bike)
+      setLogEntries(entries)
+      setIsReady(true)
+    }
+    init().catch(console.error)
   }, [])
 
   async function saveBike(bike: Bike) {

@@ -13,7 +13,7 @@ export interface Bike {
 }
 
 export interface LogEntry {
-  id: number
+  id: string
   date: string
   odometer: number | null
   type: LogType

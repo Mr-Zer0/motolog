@@ -1,4 +1,4 @@
-export type LogType = 'maintenance' | 'modification' | 'repair' | 'fuel' | 'other'
+export type LogType = 'maintenance' | 'modification' | 'repair' | 'fuel' | 'inspection' | 'cleaning' | 'other'
 
 export interface Bike {
   name: string

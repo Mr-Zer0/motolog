@@ -111,6 +111,8 @@ export default function NewLogModal({ open, onOpenChange }: Props) {
                 <SelectItem value="modification">Modification</SelectItem>
                 <SelectItem value="repair">Repair</SelectItem>
                 <SelectItem value="fuel">Fuel</SelectItem>
+                <SelectItem value="inspection">Inspection</SelectItem>
+                <SelectItem value="cleaning">Cleaning</SelectItem>
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>

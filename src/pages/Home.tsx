@@ -12,6 +12,8 @@ const TYPE_OPTIONS: Array<{ value: LogType | 'all'; label: string }> = [
   { value: 'modification', label: 'Modification' },
   { value: 'repair', label: 'Repair' },
   { value: 'fuel', label: 'Fuel' },
+  { value: 'inspection', label: 'Inspection' },
+  { value: 'cleaning', label: 'Cleaning' },
   { value: 'other', label: 'Other' },
 ]
 
@@ -20,6 +22,8 @@ const TYPE_BADGE: Record<LogType, string> = {
   modification: 'bg-violet-950 text-violet-300 border border-violet-800',
   repair: 'bg-amber-950 text-amber-300 border border-amber-800',
   fuel: 'bg-emerald-950 text-emerald-300 border border-emerald-800',
+  inspection: 'bg-cyan-950 text-cyan-300 border border-cyan-800',
+  cleaning: 'bg-teal-950 text-teal-300 border border-teal-800',
   other: 'bg-slate-800 text-slate-300 border border-slate-700',
 }
 

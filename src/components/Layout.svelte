@@ -7,7 +7,7 @@
 
 <div class="min-h-screen bg-background">
   <header class="sticky top-0 z-10 bg-card border-b border-border">
-    <div class="mx-auto max-w-md px-4 h-14 flex items-center justify-between">
+    <div class="mx-auto w-full max-w-[768px] px-4 h-14 flex items-center justify-between">
       <span class="font-semibold text-foreground">MotoLog</span>
       <nav class="flex gap-1">
         <button
@@ -29,7 +29,7 @@
       </nav>
     </div>
   </header>
-  <main class="mx-auto max-w-md">
+  <main class="mx-auto w-full max-w-[720px]">
     {@render children()}
   </main>
 </div>

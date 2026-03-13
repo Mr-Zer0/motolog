@@ -44,8 +44,7 @@ export async function readLogEntries(): Promise<LogEntry[]> {
   return snap.docs.map(d => ({ id: d.id, ...(d.data() as Omit<LogEntry, 'id'>) }))
 }
 
-export async function insertLogEntry(entry: Omit<LogEntry, 'id' | 'created_at'>): Promise<LogEntry> {
-  const entryWithTimestamp = { ...entry, created_at: new Date().toISOString() }
-  const ref = await addDoc(collection(db, 'logEntries'), entryWithTimestamp)
-  return { ...entryWithTimestamp, id: ref.id }
+export async function insertLogEntry(entry: Omit<LogEntry, 'id'>): Promise<LogEntry> {
+  const ref = await addDoc(collection(db, 'logEntries'), entry)
+  return { ...entry, id: ref.id }
 }

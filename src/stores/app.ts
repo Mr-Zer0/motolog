@@ -19,6 +19,6 @@ export async function saveBike(bikeData: Bike) {
 }
 
 export async function addLogEntry(entry: Omit<LogEntry, 'id' | 'created_at'>) {
-  const inserted = await insertLogEntry(entry)
+  const inserted = await insertLogEntry({ ...entry, created_at: new Date().toISOString() })
   logEntries.update(entries => [inserted, ...entries])
 }

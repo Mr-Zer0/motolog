@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Paperclip } from 'lucide-svelte'
   import { bike, logEntries } from '@/stores/app'
+  import { newLogModalOpen } from '@/stores/ui'
   import { cn } from '@/lib/utils'
-  import NewLogModal from '@/components/NewLogModal.svelte'
   import type { LogType } from '@/types'
 
   const TYPE_OPTIONS: Array<{ value: LogType | 'all'; label: string }> = [
@@ -37,7 +37,6 @@
   let typeFilter = $state<LogType | 'all'>('all')
   let dateFrom = $state('')
   let dateTo = $state('')
-  let modalOpen = $state(false)
 
   let filtered = $derived(
     $logEntries
@@ -56,8 +55,8 @@
       <p class="text-sm text-muted-foreground">Maintenance & modification log</p>
     </div>
     <button
-      onclick={() => (modalOpen = true)}
-      class="shrink-0 px-3 py-1.5 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary-hover transition-colors"
+      onclick={() => newLogModalOpen.set(true)}
+      class="hidden sm:block shrink-0 px-3 py-1.5 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary-hover transition-colors"
     >
       + New log entry
     </button>
@@ -103,7 +102,7 @@
       </p>
       {#if $logEntries.length === 0}
         <button
-          onclick={() => (modalOpen = true)}
+          onclick={() => newLogModalOpen.set(true)}
           class="px-3 py-1.5 text-sm font-medium border border-border text-muted-foreground rounded-md hover:text-foreground transition-colors"
         >
           + New log entry
@@ -139,5 +138,3 @@
     </div>
   {/if}
 </div>
-
-<NewLogModal bind:open={modalOpen} />

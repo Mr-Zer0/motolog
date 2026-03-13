@@ -2,7 +2,7 @@
   import { addLogEntry } from '@/stores/app'
   import type { LogType } from '@/types'
 
-  let { open = $bindable(false) }: { open: boolean } = $props()
+  let { open, onclose }: { open: boolean; onclose: () => void } = $props()
 
   const today = () => new Date().toISOString().slice(0, 10)
 
@@ -28,7 +28,7 @@
 
   function close() {
     reset()
-    open = false
+    onclose()
   }
 
   async function handleSave() {

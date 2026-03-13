@@ -65,7 +65,7 @@
   <!-- Filters -->
   <div class="space-y-2">
     <div class="flex flex-wrap gap-1.5">
-      {#each TYPE_OPTIONS as opt}
+      {#each TYPE_OPTIONS as opt (opt.value)}
         <button
           onclick={() => (typeFilter = opt.value)}
           class={cn(

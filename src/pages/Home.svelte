@@ -2,7 +2,9 @@
   import { Paperclip } from 'lucide-svelte'
   import { bike, logEntries } from '@/stores/app'
   import { newLogModalOpen } from '@/stores/ui'
+  import { navigate } from '@/lib/router'
   import { cn } from '@/lib/utils'
+  import { TYPE_BADGE, formatDate, capitalize } from '@/lib/log'
   import type { LogType } from '@/types'
 
   const TYPE_OPTIONS: Array<{ value: LogType | 'all'; label: string }> = [
@@ -15,24 +17,6 @@
     { value: 'cleaning', label: 'Cleaning' },
     { value: 'other', label: 'Other' },
   ]
-
-  const TYPE_BADGE: Record<LogType, string> = {
-    maintenance: 'bg-blue-950 text-blue-300 border border-blue-800',
-    modification: 'bg-violet-950 text-violet-300 border border-violet-800',
-    repair: 'bg-amber-950 text-amber-300 border border-amber-800',
-    fuel: 'bg-emerald-950 text-emerald-300 border border-emerald-800',
-    inspection: 'bg-cyan-950 text-cyan-300 border border-cyan-800',
-    cleaning: 'bg-teal-950 text-teal-300 border border-teal-800',
-    other: 'bg-slate-800 text-slate-300 border border-slate-700',
-  }
-
-  function formatDate(dateStr: string) {
-    return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    })
-  }
 
   let typeFilter = $state<LogType | 'all'>('all')
   let dateFrom = $state('')
@@ -112,16 +96,17 @@
   {:else}
     <div class="space-y-2">
       {#each filtered as entry (entry.id)}
-        <div class="rounded-xl bg-card border border-border p-3 space-y-1.5">
+        <button
+          onclick={() => navigate(`/log/${entry.id}`)}
+          class="w-full text-left rounded-xl bg-card border border-border p-3 space-y-1.5 hover:border-primary/50 transition-colors"
+        >
           <div class="flex items-center gap-2">
             <span class={cn('text-xs px-2 py-0.5 rounded-full font-medium', TYPE_BADGE[entry.type])}>
-              {entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}
+              {capitalize(entry.type)}
             </span>
             <div class="flex items-center gap-2 ml-auto">
               {#if entry.attachment_url}
-                <a href={entry.attachment_url} target="_blank" rel="noopener noreferrer">
-                  <Paperclip size={12} class="text-muted-foreground hover:text-foreground transition-colors" />
-                </a>
+                <Paperclip size={12} class="text-muted-foreground" />
               {/if}
               <span class="text-xs text-muted-foreground">{formatDate(entry.date)}</span>
             </div>
@@ -135,7 +120,7 @@
               <span>฿{entry.cost.toLocaleString()}</span>
             {/if}
           </div>
-        </div>
+        </button>
       {/each}
     </div>
   {/if}

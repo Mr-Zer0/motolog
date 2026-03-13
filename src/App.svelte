@@ -5,10 +5,15 @@
   import Layout from '@/components/Layout.svelte'
   import Home from '@/pages/Home.svelte'
   import Settings from '@/pages/Settings.svelte'
+  import LogDetail from '@/pages/LogDetail.svelte'
 
   onMount(() => {
     initApp().catch(console.error)
   })
+
+  let logId = $derived(
+    $currentPath.startsWith('/log/') ? $currentPath.slice('/log/'.length) : null,
+  )
 </script>
 
 {#if !$isReady}
@@ -17,7 +22,9 @@
   </div>
 {:else}
   <Layout>
-    {#if $currentPath === '/settings'}
+    {#if logId}
+      <LogDetail id={logId} />
+    {:else if $currentPath === '/settings'}
       <Settings />
     {:else}
       <Home />

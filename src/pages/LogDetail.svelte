@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ArrowLeft, Paperclip, Trash2 } from 'lucide-svelte'
+  import { ArrowLeft, Trash2 } from 'lucide-svelte'
   import { logEntries, removeLogEntry } from '@/stores/app'
   import { navigate } from '@/lib/router'
   import { cn } from '@/lib/utils'
@@ -111,14 +111,12 @@
       {#if entry.attachment_url}
         <div class="space-y-1">
           <p class="text-xs text-muted-foreground">Attachment</p>
-          <a
-            href={entry.attachment_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 text-sm text-primary hover:underline"
-          >
-            <Paperclip size={14} />
-            View attachment
+          <a href={entry.attachment_url} target="_blank" rel="noopener noreferrer" class="block">
+            <img
+              src={entry.attachment_url}
+              alt="Attachment"
+              class="w-full rounded-md border border-border object-cover max-h-64 hover:opacity-90 transition-opacity"
+            />
           </a>
         </div>
       {/if}

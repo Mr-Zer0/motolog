@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Paperclip, X } from 'lucide-svelte'
+  import { X } from 'lucide-svelte'
   import { addLogEntry } from '@/stores/app'
   import { uploadAttachment } from '@/lib/storage'
   import type { LogType } from '@/types'
@@ -15,6 +15,7 @@
   let description = $state('')
   let cost = $state('')
   let file = $state<File | null>(null)
+  let previewUrl = $state<string | null>(null)
   let uploading = $state(false)
   let errors = $state<Partial<Record<'date' | 'type' | 'title', string>>>({})
 
@@ -26,6 +27,7 @@
     description = ''
     cost = ''
     file = null
+    if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null }
     uploading = false
     errors = {}
   }
@@ -36,11 +38,14 @@
   }
 
   function handleFileChange(e: Event) {
+    if (previewUrl) URL.revokeObjectURL(previewUrl)
     file = (e.target as HTMLInputElement).files?.[0] ?? null
+    previewUrl = file ? URL.createObjectURL(file) : null
   }
 
   function clearFile() {
     file = null
+    if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null }
     const input = document.getElementById('log-file') as HTMLInputElement | null
     if (input) input.value = ''
   }
@@ -179,22 +184,23 @@
 
         <div class="space-y-1">
           <label for="log-file" class={labelClass}>Attachment</label>
-          {#if file}
-            <div class="flex items-center gap-2 px-3 py-2 bg-input border border-border rounded-md">
-              <Paperclip size={14} class="text-muted-foreground shrink-0" />
-              <span class="text-sm text-foreground truncate flex-1">{file.name}</span>
+          {#if file && previewUrl}
+            <div class="relative w-full rounded-md overflow-hidden border border-border">
+              <img src={previewUrl} alt="Preview" class="w-full max-h-48 object-cover" />
               <button
                 onclick={clearFile}
-                class="text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                class="absolute top-2 right-2 p-1 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
                 aria-label="Remove file"
               >
                 <X size={14} />
               </button>
+              <p class="px-3 py-1.5 text-xs text-muted-foreground truncate border-t border-border bg-input">{file.name}</p>
             </div>
           {:else}
             <input
               id="log-file"
               type="file"
+              accept="image/*"
               onchange={handleFileChange}
               class="w-full text-sm text-muted-foreground file:mr-3 file:px-3 file:py-1.5 file:rounded-md file:border file:border-border file:bg-input file:text-foreground file:text-sm file:font-medium file:cursor-pointer hover:file:text-foreground cursor-pointer"
             />

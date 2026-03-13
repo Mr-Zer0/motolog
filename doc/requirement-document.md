@@ -186,7 +186,7 @@ Behavior:
 
 ## 5. Tech Stack
 
-- React + TypeScript.
+- Svelte + TypeScript.
 - Tailwind CSS.
 - shadcn/ui.
 - SQLite WASM (e.g., sql.js or official sqlite3 WASM).

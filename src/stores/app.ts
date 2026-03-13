@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store'
 import type { Bike, LogEntry } from '@/types'
-import { readBike, writeBike, readLogEntries, insertLogEntry } from '@/db/database'
+import { readBike, writeBike, readLogEntries, insertLogEntry, deleteLogEntry } from '@/db/database'
 
 export const isReady = writable(false)
 export const bike = writable<Bike | null>(null)
@@ -21,4 +21,9 @@ export async function saveBike(bikeData: Bike) {
 export async function addLogEntry(entry: Omit<LogEntry, 'id' | 'created_at'>) {
   const inserted = await insertLogEntry({ ...entry, created_at: new Date().toISOString() })
   logEntries.update(entries => [inserted, ...entries])
+}
+
+export async function removeLogEntry(id: string) {
+  await deleteLogEntry(id)
+  logEntries.update(entries => entries.filter(e => e.id !== id))
 }

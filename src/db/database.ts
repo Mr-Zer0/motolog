@@ -5,6 +5,7 @@ import {
   getDocs,
   setDoc,
   addDoc,
+  deleteDoc,
   query,
   orderBy,
 } from 'firebase/firestore'
@@ -47,4 +48,8 @@ export async function readLogEntries(): Promise<LogEntry[]> {
 export async function insertLogEntry(entry: Omit<LogEntry, 'id'>): Promise<LogEntry> {
   const ref = await addDoc(collection(db, 'logEntries'), entry)
   return { ...entry, id: ref.id }
+}
+
+export async function deleteLogEntry(id: string): Promise<void> {
+  await deleteDoc(doc(db, 'logEntries', id))
 }

@@ -4,6 +4,7 @@ import {
   persistentLocalCache,
   connectFirestoreEmulator,
 } from 'firebase/firestore'
+import { getStorage, connectStorageEmulator } from 'firebase/storage'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -18,7 +19,9 @@ export const app = initializeApp(firebaseConfig)
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache(),
 })
+export const storage = getStorage(app)
 
 if (import.meta.env.DEV) {
   connectFirestoreEmulator(db, 'localhost', 8080)
+  connectStorageEmulator(storage, 'localhost', 9199)
 }

@@ -21,5 +21,5 @@ export interface LogEntry {
   title: string
   description: string | null
   cost: number | null
-  has_attachment: boolean
+  attachment_url: string | null
 }

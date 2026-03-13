@@ -118,8 +118,10 @@
               {entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}
             </span>
             <div class="flex items-center gap-2 ml-auto">
-              {#if entry.has_attachment}
-                <Paperclip size={12} class="text-muted-foreground" />
+              {#if entry.attachment_url}
+                <a href={entry.attachment_url} target="_blank" rel="noopener noreferrer">
+                  <Paperclip size={12} class="text-muted-foreground hover:text-foreground transition-colors" />
+                </a>
               {/if}
               <span class="text-xs text-muted-foreground">{formatDate(entry.date)}</span>
             </div>

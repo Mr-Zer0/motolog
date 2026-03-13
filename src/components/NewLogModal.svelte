@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { Paperclip, X } from 'lucide-svelte'
   import { addLogEntry } from '@/stores/app'
+  import { uploadAttachment } from '@/lib/storage'
   import type { LogType } from '@/types'
 
   let { open, onclose }: { open: boolean; onclose: () => void } = $props()
@@ -12,7 +14,8 @@
   let title = $state('')
   let description = $state('')
   let cost = $state('')
-  let hasAttachment = $state(false)
+  let file = $state<File | null>(null)
+  let uploading = $state(false)
   let errors = $state<Partial<Record<'date' | 'type' | 'title', string>>>({})
 
   function reset() {
@@ -22,13 +25,24 @@
     title = ''
     description = ''
     cost = ''
-    hasAttachment = false
+    file = null
+    uploading = false
     errors = {}
   }
 
   function close() {
     reset()
     onclose()
+  }
+
+  function handleFileChange(e: Event) {
+    file = (e.target as HTMLInputElement).files?.[0] ?? null
+  }
+
+  function clearFile() {
+    file = null
+    const input = document.getElementById('log-file') as HTMLInputElement | null
+    if (input) input.value = ''
   }
 
   async function handleSave() {
@@ -41,16 +55,22 @@
       return
     }
 
-    await addLogEntry({
-      date,
-      odometer: odometer ? Number(odometer) : null,
-      type: type as LogType,
-      title: title.trim(),
-      description: description.trim() || null,
-      cost: cost ? Number(cost) : null,
-      has_attachment: hasAttachment,
-    })
-    close()
+    uploading = true
+    try {
+      const attachmentUrl = file ? await uploadAttachment(file) : null
+      await addLogEntry({
+        date,
+        odometer: odometer ? Number(odometer) : null,
+        type: type as LogType,
+        title: title.trim(),
+        description: description.trim() || null,
+        cost: cost ? Number(cost) : null,
+        attachment_url: attachmentUrl,
+      })
+      close()
+    } finally {
+      uploading = false
+    }
   }
 
   const inputClass =
@@ -72,7 +92,7 @@
       aria-modal="true"
       aria-label="New log entry"
       tabindex="-1"
-      class="w-full max-w-sm bg-card rounded-xl border border-border shadow-xl p-6 space-y-4"
+      class="w-full max-w-sm bg-card rounded-xl border border-border shadow-xl p-6 space-y-4 max-h-[90vh] overflow-y-auto"
       onclick={e => e.stopPropagation()}
       onkeydown={e => e.stopPropagation()}
     >
@@ -157,29 +177,45 @@
           ></textarea>
         </div>
 
-        <div class="flex items-center gap-2">
-          <input
-            id="log-attachment"
-            type="checkbox"
-            bind:checked={hasAttachment}
-            class="w-4 h-4 accent-primary"
-          />
-          <label for="log-attachment" class={labelClass}>Has attachment</label>
+        <div class="space-y-1">
+          <label for="log-file" class={labelClass}>Attachment</label>
+          {#if file}
+            <div class="flex items-center gap-2 px-3 py-2 bg-input border border-border rounded-md">
+              <Paperclip size={14} class="text-muted-foreground shrink-0" />
+              <span class="text-sm text-foreground truncate flex-1">{file.name}</span>
+              <button
+                onclick={clearFile}
+                class="text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                aria-label="Remove file"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          {:else}
+            <input
+              id="log-file"
+              type="file"
+              onchange={handleFileChange}
+              class="w-full text-sm text-muted-foreground file:mr-3 file:px-3 file:py-1.5 file:rounded-md file:border file:border-border file:bg-input file:text-foreground file:text-sm file:font-medium file:cursor-pointer hover:file:text-foreground cursor-pointer"
+            />
+          {/if}
         </div>
       </div>
 
       <div class="flex justify-end gap-2 pt-1">
         <button
           onclick={close}
-          class="px-4 py-2 text-sm font-medium border border-border text-muted-foreground rounded-md hover:text-foreground transition-colors"
+          disabled={uploading}
+          class="px-4 py-2 text-sm font-medium border border-border text-muted-foreground rounded-md hover:text-foreground transition-colors disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           onclick={handleSave}
-          class="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary-hover transition-colors"
+          disabled={uploading}
+          class="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary-hover transition-colors disabled:opacity-50"
         >
-          Save
+          {uploading ? 'Uploading…' : 'Save'}
         </button>
       </div>
     </div>

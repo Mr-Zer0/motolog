@@ -21,6 +21,7 @@ const DEFAULT_BIKE: Bike = {
   plate_number: '',
   vin: '',
   current_odometer: null,
+  buying_date: null,
 }
 
 export async function initDatabase(): Promise<void> {

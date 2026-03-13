@@ -12,6 +12,7 @@
     plate_number: '',
     vin: '',
     current_odometer: null,
+    buying_date: null,
   }
 
   let form = $state<Bike>(structuredClone($bike ?? emptyBike))
@@ -21,6 +22,8 @@
   function handleChange(field: keyof Bike, value: string) {
     if (field === 'year' || field === 'current_odometer') {
       ;(form as Record<string, unknown>)[field] = value === '' ? null : Number(value)
+    } else if (field === 'buying_date') {
+      ;(form as Record<string, unknown>)[field] = value === '' ? null : value
     } else {
       ;(form as Record<string, unknown>)[field] = value
     }
@@ -160,6 +163,17 @@
           oninput={e => handleChange('current_odometer', (e.target as HTMLInputElement).value)}
           placeholder="e.g. 2800"
           min={0}
+          class={inputClass}
+        />
+      </div>
+
+      <div class="space-y-1">
+        <label for="bike-buying-date" class={labelClass}>Buying date</label>
+        <input
+          id="bike-buying-date"
+          type="date"
+          value={form.buying_date ?? ''}
+          onchange={e => handleChange('buying_date', (e.target as HTMLInputElement).value)}
           class={inputClass}
         />
       </div>

@@ -10,6 +10,7 @@ export interface Bike {
   plate_number: string
   vin: string
   current_odometer: number | null
+  buying_date: string | null
 }
 
 export interface LogEntry {

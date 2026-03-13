@@ -18,7 +18,7 @@ export async function saveBike(bikeData: Bike) {
   bike.set(bikeData)
 }
 
-export async function addLogEntry(entry: Omit<LogEntry, 'id'>) {
+export async function addLogEntry(entry: Omit<LogEntry, 'id' | 'created_at'>) {
   const inserted = await insertLogEntry(entry)
   logEntries.update(entries => [inserted, ...entries])
 }

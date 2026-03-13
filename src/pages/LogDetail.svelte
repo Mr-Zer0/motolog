@@ -3,7 +3,7 @@
   import { logEntries } from '@/stores/app'
   import { navigate } from '@/lib/router'
   import { cn } from '@/lib/utils'
-  import { TYPE_BADGE, formatDate, capitalize } from '@/lib/log'
+  import { TYPE_BADGE, formatDate, formatDateTime, capitalize } from '@/lib/log'
 
   let { id }: { id: string } = $props()
 
@@ -36,6 +36,9 @@
         </span>
         <span class="text-xs text-muted-foreground">{formatDate(entry.date)}</span>
       </div>
+
+      <!-- Entry datetime -->
+      <p class="text-xs text-muted-foreground">Saved on {formatDateTime(entry.created_at)}</p>
 
       <!-- Title -->
       <p class="text-base font-semibold text-foreground">{entry.title}</p>

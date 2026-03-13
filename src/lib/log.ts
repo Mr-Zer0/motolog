@@ -21,3 +21,13 @@ export function formatDate(dateStr: string) {
 export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+export function formatDateTime(isoStr: string) {
+  return new Date(isoStr).toLocaleString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}

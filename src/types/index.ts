@@ -16,6 +16,7 @@ export interface Bike {
 export interface LogEntry {
   id: string
   date: string
+  created_at: string
   odometer: number | null
   type: LogType
   title: string

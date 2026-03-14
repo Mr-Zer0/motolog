@@ -17,6 +17,7 @@
   let file = $state<File | null>(null)
   let previewUrl = $state<string | null>(null)
   let uploading = $state(false)
+  let saveError = $state('')
   let errors = $state<Partial<Record<'date' | 'type' | 'title', string>>>({})
 
   function reset() {
@@ -29,6 +30,7 @@
     file = null
     if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null }
     uploading = false
+    saveError = ''
     errors = {}
   }
 
@@ -61,6 +63,7 @@
     }
 
     uploading = true
+    saveError = ''
     try {
       const attachmentUrl = file ? await uploadAttachment(file) : null
       await addLogEntry({
@@ -73,6 +76,8 @@
         attachment_url: attachmentUrl,
       })
       close()
+    } catch (e) {
+      saveError = e instanceof Error ? e.message : 'Failed to save. Please try again.'
     } finally {
       uploading = false
     }
@@ -207,6 +212,10 @@
           {/if}
         </div>
       </div>
+
+      {#if saveError}
+        <p class="text-xs text-destructive">{saveError}</p>
+      {/if}
 
       <div class="flex justify-end gap-2 pt-1">
         <button

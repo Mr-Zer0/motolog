@@ -115,6 +115,7 @@
             <img
               src={entry.attachment_url}
               alt="Attachment"
+              loading="lazy"
               class="w-full rounded-md border border-border object-cover max-h-64 hover:opacity-90 transition-opacity"
             />
           </a>

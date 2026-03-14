@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
-  import { Home, Plus, Settings } from 'lucide-svelte'
+  import { Home, Plus, Settings, LogOut } from 'lucide-svelte'
   import { currentPath, navigate } from '@/lib/router'
   import { newLogModalOpen } from '@/stores/ui'
+  import { signOut } from '@/stores/auth'
   import NewLogModal from '@/components/NewLogModal.svelte'
 
   let { children }: { children: Snippet } = $props()
@@ -13,7 +14,7 @@
   <header class="hidden sm:block sticky top-0 z-10 bg-card border-b border-border">
     <div class="mx-auto w-full max-w-3xl px-4 h-14 flex items-center justify-between">
       <span class="font-semibold text-foreground">MotoLog</span>
-      <nav class="flex gap-1">
+      <nav class="flex items-center gap-1">
         <button
           onclick={() => navigate('/')}
           class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors {$currentPath === '/'
@@ -29,6 +30,13 @@
             : 'text-muted-foreground hover:text-foreground'}"
         >
           Settings
+        </button>
+        <button
+          onclick={signOut}
+          class="p-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="Sign out"
+        >
+          <LogOut size={16} />
         </button>
       </nav>
     </div>

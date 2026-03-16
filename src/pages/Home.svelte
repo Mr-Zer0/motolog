@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Paperclip, SlidersHorizontal, ChevronDown } from 'lucide-svelte'
   import { slide } from 'svelte/transition'
-  import { bike, logEntries } from '@/stores/app'
+  import { bike, logEntries, hasMore, loadingMore, loadMoreEntries } from '@/stores/app'
   import { navigate } from '@/lib/router'
   import { cn } from '@/lib/utils'
   import { TYPE_BADGE, formatDate, capitalize } from '@/lib/log'
@@ -24,6 +24,15 @@
   let filterOpen = $state(false)
 
   let isFiltered = $derived(typeFilter !== 'all' || !!dateFrom || !!dateTo)
+
+  function sentinel(node: HTMLElement) {
+    const observer = new IntersectionObserver(
+      entries => { if (entries[0].isIntersecting && $hasMore && !$loadingMore) loadMoreEntries() },
+      { rootMargin: '200px' },
+    )
+    observer.observe(node)
+    return { destroy: () => observer.disconnect() }
+  }
 
   let filtered = $derived(
     $logEntries
@@ -167,6 +176,15 @@
           </div>
         </button>
       {/each}
+
+      <!-- Infinite scroll sentinel -->
+      <div use:sentinel></div>
+
+      {#if $loadingMore}
+        <div class="flex justify-center py-4">
+          <div class="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      {/if}
     </div>
   {/if}
 </div>

@@ -1,16 +1,36 @@
 import { writable } from 'svelte/store'
+import type { DocumentSnapshot } from 'firebase/firestore'
 import type { Bike, LogEntry } from '@/types'
-import { readBike, writeBike, readLogEntries, insertLogEntry, deleteLogEntry } from '@/db/database'
+import { readBike, writeBike, readLogEntriesPage, insertLogEntry, deleteLogEntry } from '@/db/database'
 
 export const isReady = writable(false)
 export const bike = writable<Bike | null>(null)
 export const logEntries = writable<LogEntry[]>([])
+export const hasMore = writable(false)
+export const loadingMore = writable(false)
+
+let lastDoc: DocumentSnapshot | null = null
 
 export async function initApp() {
-  const [bikeData, entries] = await Promise.all([readBike(), readLogEntries()])
+  const [bikeData, page] = await Promise.all([readBike(), readLogEntriesPage()])
   bike.set(bikeData)
-  logEntries.set(entries)
+  logEntries.set(page.entries)
+  lastDoc = page.lastDoc
+  hasMore.set(page.hasMore)
   isReady.set(true)
+}
+
+export async function loadMoreEntries() {
+  if (!lastDoc) return
+  loadingMore.set(true)
+  try {
+    const page = await readLogEntriesPage(lastDoc)
+    logEntries.update(entries => [...entries, ...page.entries])
+    lastDoc = page.lastDoc
+    hasMore.set(page.hasMore)
+  } finally {
+    loadingMore.set(false)
+  }
 }
 
 export async function saveBike(bikeData: Bike) {

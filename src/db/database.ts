@@ -8,6 +8,9 @@ import {
   deleteDoc,
   query,
   orderBy,
+  limit,
+  startAfter,
+  type DocumentSnapshot,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import type { Bike, LogEntry } from '@/types'
@@ -43,6 +46,24 @@ export async function readLogEntries(): Promise<LogEntry[]> {
   const q = query(collection(db, 'logEntries'), orderBy('date', 'desc'))
   const snap = await getDocs(q)
   return snap.docs.map(d => ({ id: d.id, ...(d.data() as Omit<LogEntry, 'id'>) }))
+}
+
+const PAGE_SIZE = 20
+
+export async function readLogEntriesPage(
+  cursor?: DocumentSnapshot,
+): Promise<{ entries: LogEntry[]; lastDoc: DocumentSnapshot | null; hasMore: boolean }> {
+  const constraints = cursor
+    ? [orderBy('date', 'desc'), startAfter(cursor), limit(PAGE_SIZE + 1)]
+    : [orderBy('date', 'desc'), limit(PAGE_SIZE + 1)]
+  const snap = await getDocs(query(collection(db, 'logEntries'), ...constraints))
+  const hasMore = snap.docs.length > PAGE_SIZE
+  const docs = hasMore ? snap.docs.slice(0, PAGE_SIZE) : snap.docs
+  return {
+    entries: docs.map(d => ({ id: d.id, ...(d.data() as Omit<LogEntry, 'id'>) })),
+    lastDoc: docs[docs.length - 1] ?? null,
+    hasMore,
+  }
 }
 
 export async function insertLogEntry(entry: Omit<LogEntry, 'id'>): Promise<LogEntry> {

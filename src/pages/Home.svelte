@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Paperclip } from 'lucide-svelte'
+  import { Paperclip, SlidersHorizontal, ChevronDown } from 'lucide-svelte'
+  import { slide } from 'svelte/transition'
   import { bike, logEntries } from '@/stores/app'
   import { navigate } from '@/lib/router'
   import { cn } from '@/lib/utils'
@@ -20,6 +21,9 @@
   let typeFilter = $state<LogType | 'all'>('all')
   let dateFrom = $state('')
   let dateTo = $state('')
+  let filterOpen = $state(false)
+
+  let isFiltered = $derived(typeFilter !== 'all' || !!dateFrom || !!dateTo)
 
   let filtered = $derived(
     $logEntries
@@ -70,34 +74,53 @@
 
   <!-- Filters -->
   <div class="space-y-2">
-    <div class="flex flex-wrap gap-1.5">
-      {#each TYPE_OPTIONS as opt (opt.value)}
-        <button
-          onclick={() => (typeFilter = opt.value)}
-          class={cn(
-            'px-3 py-1 rounded-full text-xs font-medium border transition-colors',
-            typeFilter === opt.value
-              ? 'bg-primary text-primary-foreground border-primary'
-              : 'border-border text-muted-foreground hover:text-foreground',
-          )}
-        >
-          {opt.label}
-        </button>
-      {/each}
-    </div>
-    <div class="flex items-center gap-2">
-      <input
-        type="date"
-        bind:value={dateFrom}
-        class="flex-1 bg-input border border-border rounded-md px-3 py-1.5 text-xs text-foreground"
-      />
-      <span class="text-xs text-muted-foreground">to</span>
-      <input
-        type="date"
-        bind:value={dateTo}
-        class="flex-1 bg-input border border-border rounded-md px-3 py-1.5 text-xs text-foreground"
-      />
-    </div>
+    <button
+      onclick={() => (filterOpen = !filterOpen)}
+      class="flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors text-sm font-medium
+        {isFiltered
+          ? 'border-primary bg-primary/10 text-primary'
+          : 'border-border text-muted-foreground hover:text-foreground'}"
+    >
+      <SlidersHorizontal size={14} />
+      Filter
+      {#if isFiltered && typeFilter !== 'all'}
+        <span class="text-xs">· {capitalize(typeFilter)}</span>
+      {/if}
+      <ChevronDown size={14} class="ml-auto transition-transform duration-200 {filterOpen ? 'rotate-180' : ''}" />
+    </button>
+
+    {#if filterOpen}
+      <div transition:slide={{ duration: 200 }} class="space-y-2 rounded-xl bg-card border border-border p-3">
+        <div class="flex flex-wrap gap-1.5">
+          {#each TYPE_OPTIONS as opt (opt.value)}
+            <button
+              onclick={() => (typeFilter = opt.value)}
+              class={cn(
+                'px-3 py-1 rounded-full text-xs font-medium border transition-colors',
+                typeFilter === opt.value
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'border-border text-muted-foreground hover:text-foreground',
+              )}
+            >
+              {opt.label}
+            </button>
+          {/each}
+        </div>
+        <div class="flex items-center gap-2">
+          <input
+            type="date"
+            bind:value={dateFrom}
+            class="flex-1 bg-input border border-border rounded-md px-3 py-1.5 text-xs text-foreground"
+          />
+          <span class="text-xs text-muted-foreground">to</span>
+          <input
+            type="date"
+            bind:value={dateTo}
+            class="flex-1 bg-input border border-border rounded-md px-3 py-1.5 text-xs text-foreground"
+          />
+        </div>
+      </div>
+    {/if}
   </div>
 
   <!-- Log list or empty state -->

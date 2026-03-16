@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Paperclip } from 'lucide-svelte'
   import { bike, logEntries } from '@/stores/app'
-  import { newLogModalOpen } from '@/stores/ui'
   import { navigate } from '@/lib/router'
   import { cn } from '@/lib/utils'
   import { TYPE_BADGE, formatDate, capitalize } from '@/lib/log'
@@ -39,7 +38,7 @@
       <p class="text-sm text-muted-foreground">Maintenance & modification log</p>
     </div>
     <button
-      onclick={() => newLogModalOpen.set(true)}
+      onclick={() => navigate('/new')}
       class="hidden sm:block shrink-0 px-3 py-1.5 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary-hover transition-colors"
     >
       + New log entry
@@ -86,7 +85,7 @@
       </p>
       {#if $logEntries.length === 0}
         <button
-          onclick={() => newLogModalOpen.set(true)}
+          onclick={() => navigate('/new')}
           class="px-3 py-1.5 text-sm font-medium border border-border text-muted-foreground rounded-md hover:text-foreground transition-colors"
         >
           + New log entry

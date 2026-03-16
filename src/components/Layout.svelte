@@ -2,9 +2,7 @@
   import type { Snippet } from 'svelte'
   import { Plus, Settings, LogOut } from 'lucide-svelte'
   import { currentPath, navigate } from '@/lib/router'
-  import { newLogModalOpen } from '@/stores/ui'
   import { signOut } from '@/stores/auth'
-  import NewLogModal from '@/components/NewLogModal.svelte'
 
   let { children }: { children: Snippet } = $props()
 </script>
@@ -52,7 +50,7 @@
     class="sm:hidden fixed bottom-0 inset-x-0 z-10 bg-card border-t border-border flex items-center gap-3 px-4 h-16"
   >
     <button
-      onclick={() => newLogModalOpen.set(true)}
+      onclick={() => navigate('/new')}
       class="flex items-center justify-center gap-2 flex-1 h-10 rounded-lg bg-primary text-primary-foreground hover:bg-primary-hover transition-colors text-sm font-medium"
     >
       <Plus size={18} />
@@ -70,8 +68,3 @@
     </button>
   </nav>
 </div>
-
-<NewLogModal
-  open={$newLogModalOpen}
-  onclose={() => newLogModalOpen.set(false)}
-/>

@@ -110,34 +110,19 @@
 
       <div class="space-y-3">
         <div class="space-y-1">
-          <label for="log-date" class={labelClass}>Date</label>
-          <input
-            id="log-date"
-            type="date"
-            bind:value={date}
-            class="{inputClass} {errors.date ? 'border-destructive' : ''}"
-          />
-          {#if errors.date}<p class="text-xs text-destructive">{errors.date}</p>{/if}
-        </div>
-
-        <div class="space-y-1">
-          <label for="log-type" class={labelClass}>Type</label>
-          <select
-            id="log-type"
-            bind:value={type}
-            class="w-full bg-input border {errors.type
-              ? 'border-destructive'
-              : 'border-border'} rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
-          >
-            <option value="" disabled>Select type</option>
-            <option value="maintenance">Maintenance</option>
-            <option value="modification">Modification</option>
-            <option value="repair">Repair</option>
-            <option value="fuel">Fuel</option>
-            <option value="inspection">Inspection</option>
-            <option value="cleaning">Cleaning</option>
-            <option value="other">Other</option>
-          </select>
+          <p class={labelClass}>Type</p>
+          <div class="grid grid-cols-4 gap-1.5">
+            {#each ['maintenance', 'modification', 'repair', 'fuel', 'inspection', 'cleaning', 'other'] as t (t)}
+              <button
+                type="button"
+                onclick={() => { type = t as LogType; errors = { ...errors, type: undefined } }}
+                class="py-1.5 rounded-md text-xs font-medium border transition-colors capitalize
+                  {type === t
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-input border-border text-muted-foreground hover:text-foreground'}"
+              >{t}</button>
+            {/each}
+          </div>
           {#if errors.type}<p class="text-xs text-destructive">{errors.type}</p>{/if}
         </div>
 
@@ -152,16 +137,28 @@
           {#if errors.title}<p class="text-xs text-destructive">{errors.title}</p>{/if}
         </div>
 
-        <div class="space-y-1">
-          <label for="log-odo" class={labelClass}>Odometer (km)</label>
-          <input
-            id="log-odo"
-            type="number"
-            bind:value={odometer}
-            placeholder="e.g. 2800"
-            min={0}
-            class={inputClass}
-          />
+        <div class="grid grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label for="log-odo" class={labelClass}>Odometer (km)</label>
+            <input
+              id="log-odo"
+              type="number"
+              bind:value={odometer}
+              placeholder="e.g. 2800"
+              min={0}
+              class={inputClass}
+            />
+          </div>
+          <div class="space-y-1">
+            <label for="log-date" class={labelClass}>Date</label>
+            <input
+              id="log-date"
+              type="date"
+              bind:value={date}
+              class="{inputClass} {errors.date ? 'border-destructive' : ''}"
+            />
+            {#if errors.date}<p class="text-xs text-destructive">{errors.date}</p>{/if}
+          </div>
         </div>
 
         <div class="space-y-1">

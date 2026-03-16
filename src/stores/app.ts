@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store'
 import type { DocumentSnapshot } from 'firebase/firestore'
 import type { Bike, LogEntry } from '@/types'
-import { readBike, writeBike, readLogEntriesPage, insertLogEntry, deleteLogEntry } from '@/db/database'
+import { readBike, writeBike, readLogEntriesPage, insertLogEntry, deleteLogEntry, updateLogEntry as dbUpdateLogEntry } from '@/db/database'
 
 export const isReady = writable(false)
 export const bike = writable<Bike | null>(null)
@@ -46,4 +46,9 @@ export async function addLogEntry(entry: Omit<LogEntry, 'id' | 'created_at'>) {
 export async function removeLogEntry(id: string) {
   await deleteLogEntry(id)
   logEntries.update(entries => entries.filter(e => e.id !== id))
+}
+
+export async function updateLogEntry(id: string, updates: Partial<Omit<LogEntry, 'id' | 'created_at'>>) {
+  await dbUpdateLogEntry(id, updates)
+  logEntries.update(entries => entries.map(e => e.id === id ? { ...e, ...updates } : e))
 }

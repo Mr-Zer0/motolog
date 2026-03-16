@@ -9,6 +9,7 @@
   import LogDetail from '@/pages/LogDetail.svelte'
   import Login from '@/pages/Login.svelte'
   import NewLog from '@/pages/NewLog.svelte'
+  import EditLog from '@/pages/EditLog.svelte'
   import NotFound from '@/pages/NotFound.svelte'
 
   let authReady = $state(false)
@@ -24,8 +25,14 @@
     }
   })
 
-  let logId = $derived(
+  let logMatch = $derived(
     $currentPath.startsWith('/log/') ? $currentPath.slice('/log/'.length) : null,
+  )
+  let logId = $derived(
+    logMatch && !logMatch.endsWith('/edit') ? logMatch : null,
+  )
+  let editLogId = $derived(
+    logMatch?.endsWith('/edit') ? logMatch.slice(0, -'/edit'.length) : null,
   )
 </script>
 
@@ -37,7 +44,9 @@
   <Login />
 {:else}
   <Layout>
-    {#if logId}
+    {#if editLogId}
+      <EditLog id={editLogId} />
+    {:else if logId}
       <LogDetail id={logId} />
     {:else if $currentPath === '/settings'}
       <Settings />

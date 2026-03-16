@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ArrowLeft, Trash2 } from 'lucide-svelte'
+  import { ArrowLeft, Trash2, Pencil } from 'lucide-svelte'
   import { logEntries, removeLogEntry } from '@/stores/app'
   import { navigate } from '@/lib/router'
   import { cn } from '@/lib/utils'
@@ -38,6 +38,13 @@
 
     {#if entry}
       <div class="flex items-center gap-2">
+        <button
+          onclick={() => navigate(`/log/${id}/edit`)}
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-border text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Pencil size={13} />
+          Edit
+        </button>
         {#if confirming}
           <span class="text-xs text-muted-foreground">Remove this entry?</span>
           <button

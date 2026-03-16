@@ -6,6 +6,7 @@ import {
   setDoc,
   addDoc,
   deleteDoc,
+  updateDoc,
   query,
   orderBy,
   limit,
@@ -73,4 +74,8 @@ export async function insertLogEntry(entry: Omit<LogEntry, 'id'>): Promise<LogEn
 
 export async function deleteLogEntry(id: string): Promise<void> {
   await deleteDoc(doc(db, 'logEntries', id))
+}
+
+export async function updateLogEntry(id: string, updates: Partial<Omit<LogEntry, 'id' | 'created_at'>>): Promise<void> {
+  await updateDoc(doc(db, 'logEntries', id), updates)
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { X } from 'lucide-svelte'
+  import { X, Wrench, Sliders, Hammer, Fuel, ClipboardCheck, Sparkles, MoreHorizontal } from 'lucide-svelte'
   import { addLogEntry } from '@/stores/app'
   import { uploadAttachment } from '@/lib/storage'
   import type { LogType } from '@/types'
@@ -86,6 +86,16 @@
   const inputClass =
     'w-full bg-input border border-border rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background'
   const labelClass = 'text-xs font-medium text-muted-foreground'
+
+  const typeIcons: Record<string, typeof Wrench> = {
+    maintenance: Wrench,
+    modification: Sliders,
+    repair: Hammer,
+    fuel: Fuel,
+    inspection: ClipboardCheck,
+    cleaning: Sparkles,
+    other: MoreHorizontal,
+  }
 </script>
 
 {#if open}
@@ -113,14 +123,18 @@
           <p class={labelClass}>Type</p>
           <div class="grid grid-cols-4 gap-1.5">
             {#each ['maintenance', 'modification', 'repair', 'fuel', 'inspection', 'cleaning', 'other'] as t (t)}
+              {@const Icon = typeIcons[t]}
               <button
                 type="button"
                 onclick={() => { type = t as LogType; errors = { ...errors, type: undefined } }}
-                class="py-1.5 rounded-md text-xs font-medium border transition-colors capitalize
+                class="flex flex-col items-center gap-1 py-2 rounded-md text-xs font-medium border transition-colors capitalize
                   {type === t
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-input border-border text-muted-foreground hover:text-foreground'}"
-              >{t}</button>
+              >
+                <Icon size={15} />
+                {t}
+              </button>
             {/each}
           </div>
           {#if errors.type}<p class="text-xs text-destructive">{errors.type}</p>{/if}

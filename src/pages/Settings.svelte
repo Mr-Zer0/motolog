@@ -197,7 +197,7 @@
       <div class="flex items-center gap-3 pt-1">
         <button
           onclick={handleSave}
-          class="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary-hover transition-colors"
+          class="w-full sm:w-auto px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary-hover transition-colors"
         >
           Save
         </button>

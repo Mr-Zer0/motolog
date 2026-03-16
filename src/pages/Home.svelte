@@ -33,9 +33,32 @@
 <div class="p-4 space-y-4">
   <!-- Header -->
   <div class="flex items-start justify-between gap-4">
-    <div>
-      <h1 class="text-xl font-bold text-foreground">{$bike?.name || 'Your bike'}</h1>
-      <p class="text-sm text-muted-foreground">Maintenance & modification log</p>
+    <div class="flex-1 rounded-xl bg-card border border-border p-4 space-y-1.5">
+      <div class="flex items-start justify-between gap-2">
+        <h1 class="text-xl font-bold text-foreground">{$bike?.name || 'Your bike'}</h1>
+        {#if $bike?.year}
+          <span class="text-sm text-muted-foreground shrink-0">{$bike.year}</span>
+        {/if}
+      </div>
+      {#if $bike?.plate_number}
+        <span class="inline-block px-2 py-0.5 text-xs font-medium rounded border border-amber-500/40 bg-amber-500/10 text-amber-400">{$bike.plate_number}</span>
+      {/if}
+      {#if $bike?.brand || $bike?.model}
+        <div class="flex gap-2 mt-2">
+          {#if $bike?.brand}
+            <div class="flex-1 rounded-md bg-input px-3 py-1.5">
+              <p class="text-xs text-muted-foreground">Brand</p>
+              <p class="text-sm font-medium text-foreground">{$bike.brand}</p>
+            </div>
+          {/if}
+          {#if $bike?.model}
+            <div class="flex-1 rounded-md bg-input px-3 py-1.5">
+              <p class="text-xs text-muted-foreground">Model</p>
+              <p class="text-sm font-medium text-foreground">{$bike.model}</p>
+            </div>
+          {/if}
+        </div>
+      {/if}
     </div>
     <button
       onclick={() => navigate('/new')}

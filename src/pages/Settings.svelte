@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { ArrowLeft } from 'lucide-svelte'
+  import { ArrowLeft, LogOut } from 'lucide-svelte'
   import { bike, saveBike } from '@/stores/app'
   import { navigate } from '@/lib/router'
+  import { currentUser, signOut } from '@/stores/auth'
   import type { Bike } from '@/types'
 
   const emptyBike: Bike = {
@@ -204,6 +205,33 @@
           <span class="text-sm text-success">Saved successfully</span>
         {/if}
       </div>
+    </div>
+  </section>
+
+  <!-- Account (mobile only) -->
+  <section class="sm:hidden space-y-3">
+    <h2 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Account</h2>
+    <div class="rounded-xl bg-card border border-border p-4 space-y-3">
+      {#if $currentUser}
+        <div class="flex items-center gap-3">
+          {#if $currentUser.photoURL}
+            <img src={$currentUser.photoURL} alt="avatar" class="w-9 h-9 rounded-full" />
+          {/if}
+          <div class="min-w-0">
+            {#if $currentUser.displayName}
+              <p class="text-sm font-medium text-foreground truncate">{$currentUser.displayName}</p>
+            {/if}
+            <p class="text-xs text-muted-foreground truncate">{$currentUser.email}</p>
+          </div>
+        </div>
+      {/if}
+      <button
+        onclick={signOut}
+        class="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium text-destructive border border-destructive/40 rounded-md hover:bg-destructive/10 transition-colors"
+      >
+        <LogOut size={15} />
+        Sign out
+      </button>
     </div>
   </section>
 

@@ -119,7 +119,12 @@
           {@const Icon = typeIcons[t]}
           <button
             type="button"
-            onclick={() => { type = t as LogType; errors = { ...errors, type: undefined } }}
+            onclick={() => {
+                type = t as LogType
+                errors = { ...errors, type: undefined }
+                if (t === 'fuel') title = 'Fuel refill'
+                else if (t === 'cleaning') title = 'Cleaning'
+              }}
             class="flex flex-col items-center gap-1 py-2 rounded-md text-xs font-medium border transition-colors capitalize
               {type === t
                 ? 'bg-primary text-primary-foreground border-primary'

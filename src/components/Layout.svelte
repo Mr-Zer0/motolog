@@ -41,13 +41,13 @@
   </header>
 
   <!-- Page content -->
-  <main class="mx-auto w-full max-w-3xl {$currentPath === '/new' ? 'pb-0' : 'pb-20'} sm:pb-0">
+  <main class="mx-auto w-full max-w-3xl {$currentPath === '/new' || $currentPath === '/settings' ? 'pb-0' : 'pb-20'} sm:pb-0">
     {@render children()}
   </main>
 
   <!-- Bottom bar: visible below sm only -->
   <nav
-    class="sm:hidden fixed bottom-0 inset-x-0 z-10 bg-card border-t border-border flex items-center gap-3 px-4 h-16 {$currentPath === '/new' ? 'hidden' : ''}"
+    class="sm:hidden fixed bottom-0 inset-x-0 z-10 bg-card border-t border-border flex items-center gap-3 px-4 h-16 {$currentPath === '/new' || $currentPath === '/settings' ? 'hidden' : ''}"
   >
     <button
       onclick={() => navigate('/new')}

@@ -32,6 +32,25 @@
     if (input) input.value = ''
   }
 
+  function reset() {
+    date = today()
+    odometer = ''
+    type = ''
+    title = ''
+    description = ''
+    cost = ''
+    if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null }
+    file = null
+    uploading = false
+    saveError = ''
+    errors = {}
+  }
+
+  function handleBack() {
+    reset()
+    navigate('/')
+  }
+
   async function handleSave() {
     const newErrors: typeof errors = {}
     if (!date) newErrors.date = 'Date is required'
@@ -82,7 +101,7 @@
   <!-- Header -->
   <div class="flex items-center gap-2 -mx-1">
     <button
-      onclick={() => navigate('/')}
+      onclick={handleBack}
       class="p-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors"
       aria-label="Back"
     >
@@ -210,16 +229,16 @@
   <!-- Actions -->
   <div class="flex justify-end gap-2 pt-1">
     <button
-      onclick={() => navigate('/')}
+      onclick={handleBack}
       disabled={uploading}
-      class="px-4 py-2 text-sm font-medium border border-border text-muted-foreground rounded-md hover:text-foreground transition-colors disabled:opacity-50"
+      class="hidden sm:block px-4 py-2 text-sm font-medium border border-border text-muted-foreground rounded-md hover:text-foreground transition-colors disabled:opacity-50"
     >
       Cancel
     </button>
     <button
       onclick={handleSave}
       disabled={uploading}
-      class="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary-hover transition-colors disabled:opacity-50"
+      class="w-full sm:w-auto px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary-hover transition-colors disabled:opacity-50"
     >
       {uploading ? 'Uploading…' : 'Save'}
     </button>

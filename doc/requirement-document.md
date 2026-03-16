@@ -1,114 +1,136 @@
-# MotoLogbook – Minimal Requirements Document
+# MotoLogbook – Requirements Document
 
-A minimalist personal web app for tracking maintenance and modifications of a single motorbike.  
-Platform: Web (React + Tailwind + shadcn, SQLite WASM in browser, static hosting, **Progressive Web App**).
+A minimalist personal web app for tracking maintenance and modifications of a single motorbike.
+Platform: Web (Svelte 5 + Tailwind CSS + TypeScript, Firebase backend, static hosting).
 
 ---
 
 ## 1. Project Overview
 
-MotoLogbook is a simple, local-only log for one bike.  
-It has just two main screens:
+MotoLogbook is a simple log for one bike.
+It has two main screens:
 
-- Home: list of all log entries with filters and a “New log” form/modal.
+- Home: list of all log entries with filters and a "New log" modal.
 - Settings: bike information + data backup.
 
 No dashboard, no analytics, no multi-bike support.
 
 Goals:
 
-- Zero backend and zero recurring cost.
 - Minimal UI; focus on quickly adding and browsing logs.
-- All data local in browser, with optional manual backup.
-- Installable **Progressive Web App (PWA)** that works well on desktop and mobile.
+- Cloud data storage via Firestore with offline-first persistence.
+- Secure access via Google authentication.
+- Hosted on Firebase Hosting.
 
 ---
 
 ## 2. High-Level Features
 
-1. Single-bike configuration (Settings).
-2. Log entries list (Home).
-3. New log entry form/modal.
-4. Simple filters on the list.
-5. Local storage via SQLite WASM.
-6. Manual export/import (even if basic).
-7. **PWA support**:
-   - Installable on device.
-   - Offline-capable for core functionality.
+1. Google sign-in authentication.
+2. Single-bike configuration (Settings).
+3. Log entries list (Home).
+4. New log entry form/modal.
+5. Log entry detail view with remove option.
+6. Simple filters on the list.
+7. Image attachment upload per log entry.
+8. Cloud storage via Firestore with offline persistence.
 
 ---
 
 ## 3. Functional Requirements
 
-### 3.1 Home Page (Log List)
+### 3.1 Authentication
 
-Route: `/`  
+- Sign in with Google via Firebase Authentication.
+- App is fully gated behind authentication — unauthenticated users see a login screen.
+- Sign-out button in the top navigation bar.
+- Firestore and Storage rules require `request.auth != null`.
+
+---
+
+### 3.2 Home Page (Log List)
+
+Route: `/`
 
 **Header area**
 
-- Show bike name (from Settings) or a placeholder like “Your bike” if not set.
-- A brief subtitle (e.g., “Maintenance & modification log”).
-- Primary button: “New log entry”.
+- Show bike name (from Settings) or "Your bike" placeholder if not set.
+- Subtitle: "Maintenance & modification log".
+- "New log entry" button (visible on desktop; on mobile the `+` button in the bottom nav opens the same modal).
 
 **Log list**
 
 - Display all log entries in reverse chronological order (newest first).
-- Use a table or list with these columns/fields:
+- Each card shows:
+  - Type badge (color-coded).
   - Date.
-  - Type (badge: maintenance, modification, repair, fuel, other).
   - Title.
-  - Odometer.
-  - Cost.
-  - Attachment indicator (icon if `hasAttachment` is true).
+  - Odometer (if set).
+  - Cost (if set).
+  - Paperclip icon if an attachment is present.
+- Clicking a card navigates to the log detail page.
 
-**Filters (simple)**
+**Filters**
 
-- Type filter:
-  - Dropdown or pill selector: All, Maintenance, Modification, Repair, Fuel, Other.
-- Date filter:
-  - Optional: from and to date inputs.
-- When filters change, list updates immediately.
+- Type filter: pill buttons — All, Maintenance, Modification, Repair, Fuel, Inspection, Cleaning, Other.
+- Date filter: from and to date inputs.
+- Filters update the list immediately.
 
 **Empty states**
 
-- When there are no logs:
-  - Show a friendly message (“No logs yet”) and a prominent “New log entry” button.
+- No logs yet: friendly message + "New log entry" button.
+- No matching logs: "No matching logs" message.
 
 ---
 
-### 3.2 New Log Entry (Modal or Inline Form)
+### 3.3 New Log Entry (Modal)
 
 **Trigger**
 
-- “New log entry” button on Home.
+- "New log entry" button on Home (desktop).
+- `+` button in bottom navigation bar (mobile).
 
 **Fields**
 
-- Date (date input, default to today).
-- Odometer (number).
-- Type (select: maintenance, modification, repair, fuel, other).
-- Title (text).
-- Description/notes (textarea).
-- Cost (number).
-- Has attachment (checkbox; boolean only).
+- Date (date input, default today) — required.
+- Type (select: Maintenance, Modification, Repair, Fuel, Inspection, Cleaning, Other) — required.
+- Title (text) — required.
+- Odometer (number, km, optional).
+- Cost (number, ฿, optional).
+- Notes (textarea, optional).
+- Attachment (image file upload, optional — images only, max 10 MB).
 
 **Behavior**
 
-- Validate required fields: Date, Type, Title.
+- Validate required fields (Date, Type, Title); show inline error messages.
 - On Save:
-  - Insert new row into SQLite.
-  - Close modal / reset form.
-  - Refresh log list.
-- On Cancel:
-  - Close without changes.
-
-Optional v1+: edit/delete existing log entries.
+  - Upload image to Firebase Storage if provided.
+  - Write entry to Firestore with `created_at` timestamp.
+  - Close modal and reset form.
+- On Cancel: close without saving.
+- Show thumbnail preview after image is selected.
+- Show upload error message if save fails.
 
 ---
 
-### 3.3 Settings Page
+### 3.4 Log Detail Page
 
-Route: `/settings`  
+Route: `/log/:id`
+
+- Back button to return to Home.
+- Type badge and date.
+- "Saved on" datetime (`created_at`).
+- Title.
+- Odometer and cost stats (if set).
+- Notes (if set).
+- Image attachment thumbnail (if set), links to full image in new tab.
+- Two-step remove button: click "Remove" → confirm "Confirm" or "Cancel".
+
+---
+
+### 3.5 Settings Page
+
+Route: `/settings`
 
 **Bike information section**
 
@@ -118,26 +140,24 @@ Fields:
 - Brand.
 - Model.
 - Year.
+- Color.
+- Engine type (ICE / EV / Hybrid).
 - License plate.
 - VIN.
-- Current odometer.
+- Current odometer (km).
+- Buying date.
 
 Behavior:
 
-- Display current values from the `bike` table (single row).
-- “Save” button:
-  - Updates the bike info in DB.
-- Show a small confirmation message on successful save.
+- Load current values from Firestore on app init.
+- "Save" button updates bike info in Firestore.
+- Show "Saved successfully" confirmation on save.
 
 **Data & backup section**
 
-- Button: “Export data”
-  - v1: triggers a download of a SQLite DB file or JSON export (can be implemented later; UI exists now).
-- Button: “Import data”
-  - v1: allows selecting a file; for now can just log that file was selected, or replace DB once implemented.
-- Helper text:
-  - Explain that all data is stored locally in the browser.
-  - Suggest periodically exporting for backup.
+- "Export data" button (UI present; not yet implemented).
+- "Import data" button (UI present; not yet implemented).
+- Helper text explaining data is stored in the cloud via Firestore.
 
 ---
 
@@ -145,110 +165,120 @@ Behavior:
 
 ### 4.1 Minimalist UX
 
-- Only two nav items: Home and Settings.
+- Two nav items: Home and Settings.
 - No charts, no extra cards.
-- Navy dark theme, clean typography.
-- Focus on:
-  - Fast “add log” flow.
-  - Readable list.
+- Dark navy theme, clean typography.
+- Max content width: 720px.
+- Responsive layout:
+  - Desktop (sm+): top navigation bar with sign-out button.
+  - Mobile: bottom navigation bar with Home, `+` (new log), and Settings icons.
 
-### 4.2 Local-Only Data
+### 4.2 Data Storage
 
-- SQLite via WASM in browser.
-- Persist DB file to IndexedDB or OPFS so data survives reloads and restarts.
-- No external backend, no sync.
+- Firestore as the primary database with `persistentLocalCache` for offline-first behavior.
+- Firebase Storage for image attachments.
+- Data is scoped to the authenticated user.
 
-### 4.3 Progressive Web App (PWA)
+### 4.3 Security
 
-- The app must be installable on supported browsers (desktop and mobile):
-  - Include a valid `manifest.json` with app name, icons, theme color, and start URL.
-- Use a service worker to:
-  - Cache core app shell (HTML, JS, CSS, fonts, icons) for offline use.
-  - Allow opening the app and viewing existing logs when offline.
-- Core behavior offline:
-  - User can open the app and see existing logs.
-  - User can add new logs while offline; they are stored locally via SQLite.
-- PWA should pass basic installability checks (served over HTTPS, manifest + service worker present).
+- Firebase Auth gates all app access.
+- Firestore rules: read/write only if `request.auth != null`.
+- Storage rules: read/write only if `request.auth != null`.
+- Security headers via Firebase Hosting: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`.
+- Static assets cached with `Cache-Control: immutable`.
+- Image uploads limited to 10 MB.
 
 ### 4.4 Performance
 
-- App should load quickly as a static web app.
-- Main operations (viewing logs, adding logs) should feel instant.
-- SQLite operations should be done asynchronously so the UI stays responsive.
-
-### 4.5 Security & Privacy
-
-- No external backend, no external tracking.
-- Data remains on the device unless user exports it.
-- No authentication needed.
+- Firebase bundle split into a separate chunk to reduce initial JS size.
+- Images loaded lazily in detail view.
+- App shell loads quickly as a static web app.
 
 ---
 
 ## 5. Tech Stack
 
-- Svelte + TypeScript.
-- Tailwind CSS.
-- shadcn/ui.
-- SQLite WASM (e.g., sql.js or official sqlite3 WASM).
-- PWA:
-  - Web app manifest.
-  - Service worker for caching and offline behavior.
-- Static hosting (Firebase Hosting, Netlify, etc.).
+- **Svelte 5** + TypeScript + Vite 7
+- **Tailwind CSS v4** via `@tailwindcss/vite`
+- **Firebase**: Firestore, Storage, Authentication, Hosting
+- `lucide-svelte` for icons
+- No UI component library — plain HTML + Tailwind classes
 
 ---
 
-## 6. Data Model (SQLite)
+## 6. Data Model (Firestore)
 
-### 6.1 bike
+### 6.1 bike (document: `bikes/{userId}`)
 
-- id (integer primary key, default 1).
-- name (text).
-- brand (text).
-- model (text).
-- year (integer).
-- plate_number (text).
-- vin (text).
-- current_odometer (integer).
+| Field              | Type             | Notes                      |
+|--------------------|------------------|----------------------------|
+| `name`             | string           | Required                   |
+| `brand`            | string           |                            |
+| `model`            | string           |                            |
+| `year`             | number \| null   |                            |
+| `color`            | string           |                            |
+| `engine_type`      | string           | `ICE` \| `EV` \| `Hybrid` |
+| `plate_number`     | string           |                            |
+| `vin`              | string           |                            |
+| `current_odometer` | number \| null   | km                         |
+| `buying_date`      | string \| null   | ISO date string            |
 
-### 6.2 log_entry
+### 6.2 log_entry (collection: `logs/{userId}/entries`)
 
-- id (integer primary key autoincrement).
-- date (text, ISO string).
-- odometer (integer, nullable).
-- type (text; maintenance / modification / repair / fuel / other).
-- title (text).
-- description (text, nullable).
-- cost (real, nullable).
-- has_attachment (integer, 0/1).
+| Field            | Type            | Notes                                                                       |
+|------------------|-----------------|-----------------------------------------------------------------------------|
+| `id`             | string          | Firestore document ID                                                       |
+| `date`           | string          | ISO date string (user-selected)                                             |
+| `created_at`     | string          | ISO datetime, stamped at save time                                          |
+| `odometer`       | number \| null  | km                                                                          |
+| `type`           | string          | maintenance / modification / repair / fuel / inspection / cleaning / other  |
+| `title`          | string          |                                                                             |
+| `description`    | string \| null  |                                                                             |
+| `cost`           | number \| null  | ฿                                                                           |
+| `attachment_url` | string \| null  | Firebase Storage download URL                                               |
 
 ---
 
 ## 7. UI Structure
 
-- Layout:
-  - Left sidebar or top nav with:
-    - Home
-    - Settings
-- Main content:
-  - Home: filters + log list + New log button.
-  - Settings: bike form + backup section.
+- **App.svelte**: auth guard → loading spinner → Login page or main app.
+- **Layout.svelte**: wraps all authenticated pages; renders top nav (desktop), bottom nav (mobile), and `NewLogModal`.
+- **Home.svelte**: filters + log list.
+- **LogDetail.svelte**: single entry detail + remove.
+- **Settings.svelte**: bike form + backup section.
+- **Login.svelte**: Google sign-in button.
 
 ---
 
-## 8. Implementation Phases
+## 8. Routing
 
-1. Layout & mock data:
-   - Build Home and Settings with in-memory arrays.
-2. SQLite integration:
-   - Wire Home and Settings to SQLite DB.
-3. Persistence:
-   - Save DB to IndexedDB/OPFS.
-4. PWA:
-   - Add manifest.json and service worker.
-   - Ensure offline opening and basic usage.
-5. Backup/import:
-   - Implement export/import.
-6. Polish:
-   - Add edit/delete, better validation, small UX improvements.
+Simple history-based SPA router (no SvelteKit, no SSR):
+
+| Path        | Component  |
+|-------------|------------|
+| `/`         | Home       |
+| `/log/:id`  | LogDetail  |
+| `/settings` | Settings   |
+
+Firebase Hosting rewrites all paths to `/index.html`.
 
 ---
+
+## 9. Firebase Emulators (Local Development)
+
+| Emulator  | Port |
+|-----------|------|
+| Auth      | 9099 |
+| Firestore | 8080 |
+| Storage   | 9199 |
+| Hosting   | 1073 |
+| UI        | 4000 |
+
+---
+
+## 10. Future Considerations
+
+- Export / import data.
+- Edit existing log entries.
+- PWA support (manifest + service worker for installability).
+- Multi-bike support.

@@ -14,6 +14,7 @@ dist-ssr
 
 # Firebase emulator data
 emulator-data/
+.firebase/*
 
 # Environment variables
 .env
@@ -30,3 +31,6 @@ emulator-data/
 *.njsproj
 *.sln
 *.sw?
+
+# Other files
+doc/screenshots/*

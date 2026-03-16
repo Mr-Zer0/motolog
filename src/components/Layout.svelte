@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
-  import { Home, Plus, Settings, LogOut } from 'lucide-svelte'
+  import { Plus, Settings, LogOut } from 'lucide-svelte'
   import { currentPath, navigate } from '@/lib/router'
   import { newLogModalOpen } from '@/stores/ui'
   import { signOut } from '@/stores/auth'
@@ -49,28 +49,19 @@
 
   <!-- Bottom bar: visible below sm only -->
   <nav
-    class="sm:hidden fixed bottom-0 inset-x-0 z-10 bg-card border-t border-border flex items-center justify-around h-16"
+    class="sm:hidden fixed bottom-0 inset-x-0 z-10 bg-card border-t border-border flex items-center gap-3 px-4 h-16"
   >
     <button
-      onclick={() => navigate('/')}
-      class="flex flex-col items-center gap-1 px-6 py-2 transition-colors {$currentPath === '/'
-        ? 'text-primary'
-        : 'text-muted-foreground'}"
-    >
-      <Home size={20} />
-      <span class="text-xs font-medium">Home</span>
-    </button>
-
-    <button
       onclick={() => newLogModalOpen.set(true)}
-      class="flex items-center justify-center w-12 h-12 rounded-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors"
+      class="flex items-center justify-center gap-2 flex-1 h-10 rounded-lg bg-primary text-primary-foreground hover:bg-primary-hover transition-colors text-sm font-medium"
     >
-      <Plus size={22} />
+      <Plus size={18} />
+      New log entry
     </button>
 
     <button
       onclick={() => navigate('/settings')}
-      class="flex flex-col items-center gap-1 px-6 py-2 transition-colors {$currentPath === '/settings'
+      class="flex flex-col items-center gap-1 px-3 py-2 transition-colors {$currentPath === '/settings'
         ? 'text-primary'
         : 'text-muted-foreground'}"
     >

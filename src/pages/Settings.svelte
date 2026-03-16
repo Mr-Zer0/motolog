@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { ArrowLeft } from 'lucide-svelte'
   import { bike, saveBike } from '@/stores/app'
+  import { navigate } from '@/lib/router'
   import type { Bike } from '@/types'
 
   const emptyBike: Bike = {
@@ -46,7 +48,20 @@
 </script>
 
 <div class="p-4 space-y-6">
-  <h1 class="text-xl font-bold text-foreground">Settings</h1>
+  <!-- Mobile back button header -->
+  <div class="sm:hidden flex items-center gap-2 -mx-1">
+    <button
+      onclick={() => navigate('/')}
+      class="p-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors"
+      aria-label="Back"
+    >
+      <ArrowLeft size={20} />
+    </button>
+    <h1 class="text-xl font-bold text-foreground">Settings</h1>
+  </div>
+
+  <!-- Desktop heading -->
+  <h1 class="hidden sm:block text-xl font-bold text-foreground">Settings</h1>
 
   <!-- Bike information -->
   <section class="space-y-3">

@@ -8,6 +8,7 @@
   import Settings from '@/pages/Settings.svelte'
   import LogDetail from '@/pages/LogDetail.svelte'
   import Login from '@/pages/Login.svelte'
+  import NotFound from '@/pages/NotFound.svelte'
 
   let authReady = $state(false)
 
@@ -39,8 +40,10 @@
       <LogDetail id={logId} />
     {:else if $currentPath === '/settings'}
       <Settings />
-    {:else}
+    {:else if $currentPath === '/'}
       <Home />
+    {:else}
+      <NotFound />
     {/if}
   </Layout>
 {/if}

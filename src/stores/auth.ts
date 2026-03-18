@@ -31,4 +31,5 @@ export async function signInWithGoogle() {
 
 export async function signOut() {
   await firebaseSignOut(auth)
+  localStorage.removeItem('motolog_last_sync')
 }

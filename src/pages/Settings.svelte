@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { ArrowLeft, LogOut } from 'lucide-svelte'
-  import { bike, saveBike } from '@/stores/app'
+  import { ArrowLeft, LogOut, RefreshCw } from 'lucide-svelte'
+  import { bike, saveBike, syncNow } from '@/stores/app'
   import { navigate } from '@/lib/router'
   import { currentUser, signOut } from '@/stores/auth'
   import type { Bike } from '@/types'
@@ -21,6 +21,29 @@
   let form = $state<Bike>(structuredClone($bike ?? emptyBike))
   let nameError = $state('')
   let saved = $state(false)
+
+  const LAST_SYNC_KEY = 'motolog_last_sync'
+  let syncing = $state(false)
+  let syncError = $state('')
+  let lastSyncTime = $state(Number(localStorage.getItem(LAST_SYNC_KEY) ?? 0))
+
+  function formatSyncTime(ts: number): string {
+    if (!ts) return 'Never'
+    return new Date(ts).toLocaleString()
+  }
+
+  async function handleSync() {
+    syncing = true
+    syncError = ''
+    try {
+      await syncNow()
+      lastSyncTime = Number(localStorage.getItem(LAST_SYNC_KEY) ?? 0)
+    } catch (e) {
+      syncError = e instanceof Error ? e.message : 'Sync failed'
+    } finally {
+      syncing = false
+    }
+  }
 
   function handleChange(field: keyof Bike, value: string) {
     if (field === 'year' || field === 'current_odometer') {
@@ -203,6 +226,29 @@
         </button>
         {#if saved}
           <span class="text-sm text-success">Saved successfully</span>
+        {/if}
+      </div>
+    </div>
+  </section>
+
+  <!-- Sync -->
+  <section class="space-y-3">
+    <h2 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Sync</h2>
+    <div class="rounded-xl bg-card border border-border p-4 space-y-3">
+      <p class="text-sm text-muted-foreground">
+        Last synced: <span class="text-foreground">{formatSyncTime(lastSyncTime)}</span>
+      </p>
+      <div class="flex items-center gap-3">
+        <button
+          onclick={handleSync}
+          disabled={syncing}
+          class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-border text-muted-foreground rounded-md hover:text-foreground transition-colors disabled:opacity-50"
+        >
+          <RefreshCw size={14} class={syncing ? 'animate-spin' : ''} />
+          {syncing ? 'Syncing…' : 'Sync now'}
+        </button>
+        {#if syncError}
+          <span class="text-sm text-destructive">{syncError}</span>
         {/if}
       </div>
     </div>

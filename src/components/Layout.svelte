@@ -11,7 +11,7 @@
   <!-- Topbar: hidden below sm -->
   <header class="hidden sm:block sticky top-0 z-10 bg-card border-b border-border">
     <div class="mx-auto w-full max-w-3xl px-4 h-14 flex items-center justify-between">
-      <span class="font-semibold text-foreground">MotoLog</span>
+      <img src="/logo.svg" alt="MotoLog" class="h-8 w-8" />
       <nav class="flex items-center gap-1">
         <button
           onclick={() => navigate('/')}

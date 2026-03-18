@@ -1,6 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte'
-  import { X, Wrench, Sliders, Hammer, Fuel, ClipboardCheck, Sparkles, MoreHorizontal } from 'lucide-svelte'
+  import { X, ImagePlus, Wrench, Sliders, Hammer, Fuel, ClipboardCheck, Sparkles, MoreHorizontal } from 'lucide-svelte'
   import type { LogType } from '@/types'
 
   export type LogFormData = {
@@ -53,11 +53,12 @@
     previewUrl = file ? URL.createObjectURL(file) : null
   }
 
+  let fileInput = $state<HTMLInputElement | null>(null)
+
   function clearFile() {
     file = null
     if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null }
-    const input = document.getElementById('log-file') as HTMLInputElement | null
-    if (input) input.value = ''
+    if (fileInput) fileInput.value = ''
   }
 
   function clearExistingAttachment() {
@@ -218,12 +219,21 @@
         </div>
       {:else}
         <input
+          bind:this={fileInput}
           id="log-file"
           type="file"
           accept="image/*"
           onchange={handleFileChange}
-          class="w-full text-sm text-muted-foreground file:mr-3 file:px-3 file:py-1.5 file:rounded-md file:border file:border-border file:bg-input file:text-foreground file:text-sm file:font-medium file:cursor-pointer hover:file:text-foreground cursor-pointer"
+          class="sr-only"
         />
+        <button
+          type="button"
+          onclick={() => fileInput?.click()}
+          class="w-full flex flex-col items-center gap-2 py-6 rounded-md border border-dashed border-border bg-input/50 text-muted-foreground hover:text-foreground hover:border-foreground/30 hover:bg-input transition-colors cursor-pointer"
+        >
+          <ImagePlus size={22} />
+          <span class="text-xs">Tap to add a photo</span>
+        </button>
       {/if}
     </div>
   {/if}

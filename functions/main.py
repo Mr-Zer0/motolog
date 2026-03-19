@@ -1,5 +1,6 @@
 import io
 import logging
+import os
 from PIL import Image
 from firebase_functions import storage_fn
 from firebase_functions.options import MemoryOption
@@ -9,8 +10,8 @@ initialize_app()
 
 logger = logging.getLogger(__name__)
 
-MAX_DIMENSION = 1920
-JPEG_QUALITY = 85
+MAX_DIMENSION = int(os.environ.get("MAX_DIMENSION", "1920"))
+JPEG_QUALITY = int(os.environ.get("JPEG_QUALITY", "85"))
 OPTIMIZED_FLAG = "optimized"
 
 

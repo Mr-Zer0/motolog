@@ -35,3 +35,9 @@ frontend/.env.*.local
 
 # Docs
 doc/screenshots/*
+
+# Cloud Functions
+functions/venv/
+functions/.venv/
+functions/__pycache__/
+functions/*.pyc

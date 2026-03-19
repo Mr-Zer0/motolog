@@ -29,7 +29,7 @@ OPTIMIZED_FLAG = "optimized"
 
 
 @storage_fn.on_object_finalized(
-    region="asia-southeast3",
+    region="us-central1",
     memory=MemoryOption.MB_512,
     timeout_sec=120,
 )

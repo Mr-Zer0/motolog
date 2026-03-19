@@ -41,7 +41,7 @@
   },
   "functions": {
     "source": "functions",
-    "runtime": "python312",
+    "runtime": "python313",
     "ignore": ["venv", ".venv", "**/__pycache__/**", "**/*.pyc"]
   },
   "emulators": {

@@ -5,6 +5,8 @@ from PIL import Image
 from firebase_functions import storage_fn
 from firebase_functions.options import MemoryOption
 from firebase_admin import initialize_app, storage as admin_storage
+from google.auth.credentials import AnonymousCredentials
+from google.cloud import storage as gcs
 
 initialize_app()
 
@@ -12,6 +14,17 @@ logger = logging.getLogger(__name__)
 
 MAX_DIMENSION = int(os.environ.get("MAX_DIMENSION", "1920"))
 JPEG_QUALITY = int(os.environ.get("JPEG_QUALITY", "85"))
+
+_storage_emulator_host = os.environ.get("STORAGE_EMULATOR_HOST")
+if _storage_emulator_host:
+    logger.warning("Emulator mode — using AnonymousCredentials against %s", _storage_emulator_host)
+    _emulator_client = gcs.Client(
+        credentials=AnonymousCredentials(),
+        project="motolog-c87ac",
+        client_options={"api_endpoint": _storage_emulator_host},
+    )
+else:
+    _emulator_client = None
 OPTIMIZED_FLAG = "optimized"
 
 
@@ -45,7 +58,10 @@ def optimize_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) -
         return
 
     # Download
-    bucket = admin_storage.bucket(data.bucket)
+    if _emulator_client:
+        bucket = _emulator_client.bucket(data.bucket)
+    else:
+        bucket = admin_storage.bucket(data.bucket)
     blob = bucket.blob(object_name)
     original_bytes = blob.download_as_bytes()
 
@@ -76,6 +92,5 @@ def optimize_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) -
     new_metadata = {**custom_metadata, OPTIMIZED_FLAG: "true"}
     blob.metadata = new_metadata
     blob.upload_from_string(optimized_bytes, content_type=content_type)
-    blob.patch()
 
     logger.info("Replaced %s with optimized version", object_name)

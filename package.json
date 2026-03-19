@@ -11,6 +11,8 @@
     "emulators:save": "firebase emulators:export ./emulator-data",
     "emulators:load": "firebase emulators:start --import=./emulator-data",
     "deploy": "npm run build && firebase deploy",
-    "deploy:hosting": "npm run build && firebase deploy --only hosting"
+    "deploy:hosting": "npm run build && firebase deploy --only hosting",
+    "deploy:functions": "firebase deploy --only functions",
+    "emulators:all": "firebase emulators:start"
   }
 }
